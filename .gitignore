@@ -4,3 +4,20 @@
 *.jar
 *.war
 *.ear
+
+# Eclipse Files #
+
+target/
+.project
+.metadata
+.classpath
+bin/
+tmp/
+*.tmp
+*.bak
+.settings/
+.externalToolBuilders/
+.launch
+.buildpath
+.idea/
+*.iml
