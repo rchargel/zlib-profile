@@ -16,23 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.zcarioca.zcommons.profile.annotations;
+package net.zcarioca.zcommons.profile;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import net.zcarioca.zcommons.profile.annotations.LoggedExecutionTime;
 
 /**
- * Annotation can be placed on any method. It wraps the execution of 
- * associated methods with a timer, and logs the execution time.
- * 
+ * Used to test logging operations
  * 
  * @author zcarioca
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
-public @interface LoggedExecutionTime
+public class LoggedClass
 {
-   
+   @LoggedExecutionTime
+   public void testLogExecTime() {
+      try {
+         Thread.sleep(500);
+      } catch (Throwable t) {
+         // do nothing
+      }
+   }
 }
