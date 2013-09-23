@@ -25,14 +25,14 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation can be placed on any method. It wraps the execution of associated
- * methods with a timer, and logs the execution time.
+ * methods with a counter, and logs the number of times the method is executed.
  * 
  * 
  * @author zcarioca
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
-public @interface LoggedExecutionTime
+public @interface LoggedExecutionCount
 {
 
 }

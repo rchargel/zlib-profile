@@ -18,6 +18,13 @@
  */
 package net.zcarioca.zcommons.profile.aspects;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+
+import net.zcarioca.zcommons.profile.utils.AtomicAverage;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -34,23 +41,85 @@ import org.slf4j.LoggerFactory;
 @Aspect
 public class LoggerAspect
 {
+   private final Map<String, AtomicLong> counterMap = Collections.synchronizedMap(new HashMap<String, AtomicLong>());
+   private final Map<String, AtomicAverage> averageMap = Collections.synchronizedMap(new HashMap<String, AtomicAverage>());
+
    /**
     * Wraps the execution of a method in a simple log statement.
     */
    @Around("@annotation(net.zcarioca.zcommons.profile.annotations.LoggedExecutionTime)")
-   public Object logExecutionTime(final ProceedingJoinPoint pjp) throws Throwable {
+   public Object logExecutionTime(final ProceedingJoinPoint pjp) throws Throwable
+   {
       long start = System.currentTimeMillis();
-      
-      try {
+
+      try
+      {
          return pjp.proceed();
-      } finally {
+      }
+      finally
+      {
          long time = System.currentTimeMillis() - start;
          Signature signature = pjp.getSignature();
          Class<?> type = signature.getDeclaringType();
          Logger logger = LoggerFactory.getLogger(type);
-         
-         if (logger.isDebugEnabled()) {
+
+         if (logger.isDebugEnabled())
+         {
             logger.debug(String.format("Call to '%s' executed in %d ms.", signature.toLongString(), time));
+         }
+      }
+   }
+
+   @Around("@annotation(net.zcarioca.zcommons.profile.annotations.LoggedExecutionCount)")
+   public Object logExecutionCounter(final ProceedingJoinPoint pjp) throws Throwable
+   {
+      try
+      {
+         return pjp.proceed();
+      }
+      finally
+      {
+         Signature signature = pjp.getSignature();
+         String sigString = signature.toLongString();
+         if (!counterMap.containsKey(sigString)) {
+            counterMap.put(sigString, new AtomicLong(0));
+         }
+         long count = counterMap.get(sigString).incrementAndGet();
+
+         Class<?> type = signature.getDeclaringType();
+         Logger logger = LoggerFactory.getLogger(type);
+
+         if (logger.isDebugEnabled())
+         {
+            logger.debug(String.format("Call to '%s' executed %d times.", sigString, count));
+         }
+      }
+   }
+
+   @Around("@annotation(net.zcarioca.zcommons.profile.annotations.LoggedAverageExecutionTime)")
+   public Object logAverageExecutionTime(final ProceedingJoinPoint pjp) throws Throwable
+   {
+      long start = System.currentTimeMillis();
+      try
+      {
+         return pjp.proceed();
+      }
+      finally
+      {
+         long time = System.currentTimeMillis() - start;
+         Signature signature = pjp.getSignature();
+         String sigString = signature.toLongString();
+         if (!averageMap.containsKey(sigString)) {
+            averageMap.put(sigString, new AtomicAverage());
+         }
+         double average = averageMap.get(sigString).addAndCalculate(time);
+
+         Class<?> type = signature.getDeclaringType();
+         Logger logger = LoggerFactory.getLogger(type);
+
+         if (logger.isDebugEnabled())
+         {
+            logger.debug(String.format("Call to '%s' executes takes %.2f ms (AVG).", sigString, average));
          }
       }
    }

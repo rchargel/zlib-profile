@@ -18,6 +18,8 @@
  */
 package net.zcarioca.zcommons.profile;
 
+import net.zcarioca.zcommons.profile.annotations.LoggedAverageExecutionTime;
+import net.zcarioca.zcommons.profile.annotations.LoggedExecutionCount;
 import net.zcarioca.zcommons.profile.annotations.LoggedExecutionTime;
 
 /**
@@ -27,11 +29,34 @@ import net.zcarioca.zcommons.profile.annotations.LoggedExecutionTime;
  */
 public class LoggedClass
 {
+   @LoggedExecutionCount
+   public void testLogExecCount()
+   {
+         // do nothing
+   }
+   
+   @LoggedAverageExecutionTime
+   public void testLogAvgExecTime()
+   {
+      try
+      {
+         Thread.sleep(20);
+      }
+      catch (Throwable t)
+      {
+         // do nothing
+      }
+   }
+   
    @LoggedExecutionTime
-   public void testLogExecTime() {
-      try {
-         Thread.sleep(500);
-      } catch (Throwable t) {
+   public void testLogExecTime()
+   {
+      try
+      {
+         Thread.sleep(100);
+      }
+      catch (Throwable t)
+      {
          // do nothing
       }
    }

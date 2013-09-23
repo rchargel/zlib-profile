@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 
 import net.zcarioca.zcommons.profile.LoggedClass;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +36,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author zcarioca
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-      "classpath:/zlib-profile-default-context.xml",
-      "classpath:/TEST-zlib-profile-context.xml"
-})
+@ContextConfiguration(locations = { "classpath:/zlib-profile-default-context.xml", "classpath:/TEST-zlib-profile-context.xml" })
 public class TestLoggerAspect
 {
    @Autowired
@@ -48,6 +46,30 @@ public class TestLoggerAspect
    public void testLoggedExecTime() throws Exception
    {
       loggedClass.testLogExecTime();
+   }
+
+   @Test
+   public void testLoggedAvgExecTime()
+   {
+      for (int i = 0; i < 30; i++)
+      {
+         loggedClass.testLogAvgExecTime();
+      }
+   }
+
+   @Test
+   public void testLoggedExecCount()
+   {
+      for (int i = 0; i < 30; i++)
+      {
+         loggedClass.testLogExecCount();
+      }
+   }
+
+   @Before
+   public void testInit()
+   {
+      assertNotNull(loggedClass);
    }
 
 }
